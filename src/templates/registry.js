@@ -30,6 +30,67 @@ export const REGISTRY = {
     ],
   },
 
+  // Avtomobil guvohnomasi (tex pasport) — skaner, qo'lda. Yorliq:qiymat jadval.
+  tex_passport: {
+    label: 'Avtomobil guvohnomasi (tex pasport)',
+    templateFile: 'tex_passport_namuna.docx',
+    manualOnly: true,
+    cellTableIndex: 0,
+    fields: [
+      { name: 'doc_number', label: 'Guvohnoma raqami (AG...)', runIndex: [1, 2], placeholder: 'AAG4991004' },
+      { name: 'vl_number', label: 'VL raqami', runIndex: [4, 5], placeholder: 'VL00099888' },
+      { name: 'number_plate', label: '1. Davlat raqami', cell: [0, 1], placeholder: '40J050QA' },
+      { name: 'make_model', label: '2. Rusumi/modeli', cell: [1, 1], placeholder: 'VOLKSWAGEN CADDY' },
+      { name: 'color', label: '3. Rangi', cell: [2, 1], placeholder: 'BLACK' },
+      { name: 'owner', label: '4. Egasi', cell: [3, 1], translit: true },
+      { name: 'address', label: '5. Manzili', cell: [4, 1], translit: true },
+      { name: 'issue_date', label: '6. Berilgan sanasi', cell: [5, 1], placeholder: '01.11.2024' },
+      { name: 'authority', label: '7. YHX bo\'limi', cell: [6, 1], translit: true },
+      { name: 'pinfl', label: '8. JShShIR / STIR', cell: [7, 1], placeholder: '32512822860034' },
+      { name: 'year', label: '9. Ishlab chiqarilgan yili', cell: [8, 1], placeholder: '2022' },
+      { name: 'type', label: '10. Turi', cell: [9, 1], placeholder: 'SEDAN' },
+      { name: 'vin', label: '11. Kuzov/shassi raqami', cell: [10, 1], placeholder: 'WV2ZZZ2KZLX148082 / -' },
+      { name: 'max_mass', label: '12. To\'la vazni', cell: [11, 1], placeholder: '2 140.00 (KG)' },
+      { name: 'mass_service', label: '13. Yuksiz vazni', cell: [12, 1], placeholder: '1 720.00 (KG)' },
+      { name: 'engine_no', label: '14. Dvigatel raqami', cell: [13, 1], placeholder: 'CWV807563' },
+      { name: 'engine_cap', label: '15. Dvigatel quvvati', cell: [14, 1], placeholder: '110' },
+      { name: 'fuel', label: '16. Yonilg\'i turi', cell: [15, 1], placeholder: 'GBASPG' },
+      { name: 'seats', label: '17. O\'tiradigan joylar', cell: [16, 1], placeholder: '7' },
+      { name: 'standing', label: '18. Tik turadigan joylar', cell: [17, 1], placeholder: '0' },
+      { name: 'special_marks', label: '19. Alohida belgilar', cell: [18, 1] },
+    ],
+  },
+
+  // Kadastr ko'chirma (Davlat reestri) — skaner, qo'lda. Yorliq:qiymat jadval.
+  kadastr: {
+    label: 'Kadastr ko\'chirma (Davlat reestri)',
+    templateFile: 'kadastr1.docx',
+    manualOnly: true,
+    cellTableIndex: 0,
+    fields: [
+      { name: 'branch_district', label: 'Tuman bo\'limi', runIndex: 5, translit: true },
+      { name: 'region', label: 'Viloyat', runIndex: 8, translit: true },
+      { name: 'issue_date', label: 'Berilgan sana', runIndex: 14, clearRuns: [15], placeholder: '14.03.2026' },
+      { name: 'doc_no', label: 'Hujjat raqami (No.)', runIndex: 29, clearRuns: [30], placeholder: '1703209/R-A6557590' },
+      // Jadval qiymatlari (katak [qator, ustun])
+      { name: 're_type', label: 'Ko\'chmas mulk turi', cell: [1, 1], placeholder: 'Residential' },
+      { name: 're_name', label: 'Mulk nomi', cell: [2, 1], placeholder: 'Apartment in a multi-storey building' },
+      { name: 'cadastral_no', label: 'Kadastr raqami', cell: [3, 1], placeholder: '17:05:01:01:06:0585:0001:019' },
+      { name: 'location', label: 'Manzil', cell: [4, 1] },
+      { name: 'serial_no', label: 'Reestr tartib raqami', cell: [5, 1], placeholder: '1703209/R-A6557590' },
+      { name: 'owner', label: 'Mulk egasi, ulush', cell: [7, 1], translit: true },
+      { name: 'right_type', label: 'Huquq turi', cell: [9, 1], placeholder: 'Ownership right' },
+      { name: 'reg_date', label: 'Ro\'yxat sanasi', cell: [10, 1], placeholder: '14/03/2026' },
+      { name: 'doc_details', label: 'Hujjat tafsiloti', cell: [11, 1] },
+      { name: 'land_area', label: 'Yer maydoni (kv.m)', cell: [13, 1] },
+      { name: 'building_area', label: 'Bino maydoni (kv.m)', cell: [14, 1] },
+      { name: 'useful_area', label: 'Umumiy foydali maydon', cell: [15, 1], placeholder: '68.37' },
+      { name: 'living_space', label: 'Yashash maydoni', cell: [16, 1], placeholder: '37.98' },
+      { name: 'construction_area', label: 'Qurilish maydoni', cell: [17, 1], placeholder: '0' },
+      { name: 'prohibitions', label: 'Taqiqlar/cheklovlar', cell: [18, 1] },
+    ],
+  },
+
   // Skaner hujjat — qo'lda to'ldiriladi (avto-o'qish yo'q, OCR yaramaydi)
   maktab_attestat: {
     label: 'Maktab attestati (ilova)',

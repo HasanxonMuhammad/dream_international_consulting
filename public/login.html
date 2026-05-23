@@ -19,48 +19,44 @@
     <p class="font-label-caps text-label-caps text-on-surface-variant opacity-70">Tarjima boshqaruv tizimi</p>
   </div>
   <div class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-sm p-stack-lg">
-    <h2 class="font-headline-sm text-headline-sm mb-stack-lg">Tizimga kirish</h2>
-    <form id="loginForm" class="flex flex-col gap-stack-md">
-      <div>
-        <label class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">Login</label>
-        <input name="username" required autocomplete="username" class="w-full p-3 bg-surface border border-outline-variant rounded focus:border-secondary focus:ring-0 outline-none" placeholder="login" />
-      </div>
-      <div>
-        <label class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">Parol</label>
-        <input name="password" type="password" required autocomplete="current-password" class="w-full p-3 bg-surface border border-outline-variant rounded focus:border-secondary focus:ring-0 outline-none" placeholder="••••••••" />
-      </div>
-      <p id="error" class="text-error text-body-md hidden"></p>
-      <button type="submit" class="mt-2 px-6 py-3 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg hover:opacity-90 transition-opacity active:scale-95">
-        KIRISH
-      </button>
-    </form>
+    <h2 class="font-headline-sm text-headline-sm mb-stack-md">Ismingizni tanlang</h2>
+    <p class="text-on-surface-variant text-body-md mb-stack-lg">Hisobotda ishlaringiz to'g'ri ko'rinishi uchun o'z ismingiz bilan kiring.</p>
+    <div id="userList" class="flex flex-col gap-stack-sm max-h-[50vh] overflow-y-auto"></div>
+    <p id="error" class="text-error text-body-md hidden mt-stack-md"></p>
   </div>
   <p class="text-center text-on-surface-variant text-code-sm mt-stack-md opacity-60">© Dream International Consulting</p>
 </div>
-<script>
-  const form = document.getElementById('loginForm');
-  const errEl = document.getElementById('error');
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errEl.classList.add('hidden');
-    const body = JSON.stringify({
-      username: form.username.value.trim(),
-      password: form.password.value,
+<script type="module">
+const listEl = document.getElementById('userList');
+const errEl = document.getElementById('error');
+
+async function load() {
+  const res = await fetch('/api/auth/users');
+  const { users } = await res.json();
+  listEl.innerHTML = users.map((u) => `
+    <button data-id="${u.id}" class="user-btn flex items-center gap-3 p-3 border border-outline-variant rounded-lg text-left hover:border-secondary hover:bg-surface-container-high transition-all">
+      <span class="h-9 w-9 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-caps text-label-caps">${(u.fullName || '?').split(' ').map((s) => s[0]).join('').slice(0, 2).toUpperCase()}</span>
+      <span class="font-body-lg">${u.fullName}</span>
+    </button>`).join('');
+  listEl.querySelectorAll('.user-btn').forEach((b) => b.addEventListener('click', () => select(b.dataset.id)));
+}
+
+async function select(userId) {
+  errEl.classList.add('hidden');
+  try {
+    const res = await fetch('/api/auth/select', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: Number(userId) }),
     });
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Xatolik');
-      location.href = '/dashboard.html';
-    } catch (err) {
-      errEl.textContent = err.message;
-      errEl.classList.remove('hidden');
-    }
-  });
+    if (!res.ok) throw new Error((await res.json()).error || 'Xatolik');
+    location.href = '/dashboard.html';
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.remove('hidden');
+  }
+}
+load();
 </script>
 </body>
 </html>

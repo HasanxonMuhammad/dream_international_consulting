@@ -5,6 +5,28 @@ import { requireAuth } from '../middleware/auth.js';
 
 export const authRouter = express.Router();
 
+// Ism tanlash ro'yxati (parolsiz kirish uchun)
+authRouter.get('/users', (req, res) => {
+  const users = db
+    .prepare('SELECT id, full_name AS fullName FROM users ORDER BY role DESC, full_name')
+    .all();
+  res.json({ users });
+});
+
+// Ism bilan kirish (parolsiz) — hisobot to'g'ri ajralishi uchun
+authRouter.post('/select', (req, res) => {
+  const id = Number(req.body?.userId);
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+  if (!user) return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
+
+  req.session.userId = user.id;
+  req.session.username = user.username;
+  req.session.fullName = user.full_name;
+  req.session.role = user.role;
+  logActivity({ userId: user.id, action: 'login' });
+  res.json({ user: { id: user.id, fullName: user.full_name, role: user.role } });
+});
+
 authRouter.post('/login', (req, res) => {
   const { username, password } = req.body || {};
   if (!username || !password) {

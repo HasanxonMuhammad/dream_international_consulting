@@ -26,8 +26,9 @@ export const config = {
     keyFile: process.env.GOOGLE_APPLICATION_CREDENTIALS || '',
   },
 
-  // VAQTINCHA: login o'chirilgan (oxirida AUTH_ENABLED=1 bilan qaytariladi)
-  authDisabled: process.env.AUTH_ENABLED !== '1',
+  // Kirish rejimi: 'name' = parolsiz, ism tanlash (hisobot ajralishi uchun)
+  //               'password' = login+parol;  'off' = umuman so'ramaydi
+  authMode: process.env.AUTH_MODE || 'name',
 
   // Til yo'nalishi: o'zbekdan inglizga
   sourceLang: process.env.SOURCE_LANG || 'uz',

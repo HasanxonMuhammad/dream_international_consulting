@@ -52,6 +52,27 @@ function transformRow(rowXml, columns, loop) {
   return out;
 }
 
+// Yorliq:qiymat jadval — har bir maydonni o'z katagiga (row, col) qo'yadi
+function templatizeCells(xml, cellFields, tableIndex, docType) {
+  const tables = xml.match(/<w:tbl>[\s\S]*?<\/w:tbl>/g) || [];
+  let tableXml = tables[tableIndex];
+  if (!tableXml) throw new Error(`${docType}: jadval topilmadi (cell, index ${tableIndex})`);
+  const original = tableXml;
+  const rows = tableXml.match(/<w:tr\b[\s\S]*?<\/w:tr>/g) || [];
+
+  for (const f of cellFields) {
+    const [r, c] = f.cell;
+    if (!rows[r]) throw new Error(`${docType}: "${f.name}" qator ${r} yo'q`);
+    const cells = rows[r].match(/<w:tc>[\s\S]*?<\/w:tc>/g) || [];
+    if (!cells[c]) throw new Error(`${docType}: "${f.name}" katak [${r},${c}] yo'q`);
+    const tag = `${f.prefix || ''}{${f.name}}${f.suffix || ''}`;
+    const newRow = rows[r].replace(cells[c], setCellText(cells[c], tag));
+    tableXml = tableXml.replace(rows[r], newRow);
+    rows[r] = newRow;
+  }
+  return xml.replace(original, tableXml);
+}
+
 function templatizeTable(xml, spec, docType) {
   const tables = xml.match(/<w:tbl>[\s\S]*?<\/w:tbl>/g) || [];
   const tableXml = tables[spec.tableIndex || 0];
@@ -86,6 +107,7 @@ export function buildOne(docType) {
   const byRun = new Map();
   const maxRun = xml.match(W_T)?.length ?? 0;
   for (const f of def.fields) {
+    if (f.runIndex == null) continue; // cell-maydonlar alohida ishlanadi
     // runIndex: raqam YOKI massiv; element raqam YOKI {i, prefix, suffix}
     const targets = Array.isArray(f.runIndex) ? f.runIndex : [f.runIndex];
     for (const t of targets) {
@@ -101,6 +123,10 @@ export function buildOne(docType) {
   }
 
   xml = templatizeXml(xml, byRun);
+
+  // Yorliq:qiymat jadval — alohida kataklarni maydonga bog'lash (cell: [row, col])
+  const cellFields = def.fields.filter((f) => Array.isArray(f.cell));
+  if (cellFields.length) xml = templatizeCells(xml, cellFields, def.cellTableIndex || 0, docType);
 
   // Dinamik jadval: bitta namuna qatorni {#loop}...{/loop} bilan o'rab, qolganini o'chiramiz
   if (def.table) xml = templatizeTable(xml, def.table, docType);
