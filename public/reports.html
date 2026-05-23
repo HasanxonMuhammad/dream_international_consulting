@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html class="light" lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Hisobotlar — Dream International</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+<script src="/js/tailwind-config.js"></script>
+<style>.material-symbols-outlined{vertical-align:middle}</style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+<aside id="sidebar" class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-low border-r border-outline-variant flex flex-col py-gutter px-4 z-50"></aside>
+<main class="ml-[280px] min-h-screen flex flex-col">
+  <header id="header" class="h-16 flex justify-between items-center px-margin-desktop bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-40"></header>
+  <section class="p-margin-desktop flex-1 space-y-stack-lg">
+    <div class="flex flex-col gap-stack-md lg:flex-row lg:items-end lg:justify-between">
+      <div>
+        <h2 class="font-headline-lg text-headline-lg">Kunlik hisobot</h2>
+        <p class="text-on-surface-variant mt-1">Xodimlarning kunlik tarjima faoliyati.</p>
+      </div>
+      <div class="flex items-end gap-stack-md">
+        <div>
+          <label class="font-label-caps text-label-caps text-outline mb-1 block">Sana</label>
+          <input id="dateInput" type="date" class="bg-surface border border-outline-variant rounded py-2 px-3 focus:ring-1 focus:ring-secondary outline-none" />
+        </div>
+        <button id="printBtn" class="px-4 py-2 border border-secondary text-secondary font-label-caps text-label-caps rounded hover:bg-secondary-container transition-colors">
+          <span class="material-symbols-outlined">print</span> CHOP ETISH
+        </button>
+      </div>
+    </div>
+    <!-- Umumiy kartalar -->
+    <div id="summary" class="grid grid-cols-2 lg:grid-cols-4 gap-stack-lg"></div>
+    <!-- Xodimlar jadvali -->
+    <div class="bg-surface-container-lowest border border-outline-variant overflow-hidden rounded">
+      <div class="p-stack-lg border-b border-outline-variant"><h3 class="font-headline-sm text-headline-sm">Xodimlar bo'yicha</h3></div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container-low border-b border-outline-variant">
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Xodim</th>
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-center">Jami</th>
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-center">Tayyor</th>
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-center">Jarayonda</th>
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase text-center">Xatolik</th>
+            </tr>
+          </thead>
+          <tbody id="perUser" class="divide-y divide-outline-variant"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- Batafsil ro'yxat -->
+    <div class="bg-surface-container-lowest border border-outline-variant overflow-hidden rounded">
+      <div class="p-stack-lg border-b border-outline-variant"><h3 class="font-headline-sm text-headline-sm">Kun davomidagi hujjatlar</h3></div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-surface-container-low border-b border-outline-variant">
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Vaqt</th>
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Fayl</th>
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Tur</th>
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Xodim</th>
+              <th class="px-stack-lg py-3 font-label-caps text-label-caps text-on-surface-variant uppercase">Holat</th>
+            </tr>
+          </thead>
+          <tbody id="items" class="divide-y divide-outline-variant"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</main>
+<script type="module">
+import { api, renderLayout, escapeHtml, formatDate, STATUS_BADGE } from '/js/common.js';
+await renderLayout('/reports.html', 'Hisobotlar');
+
+const dateInput = document.getElementById('dateInput');
+dateInput.value = new Date().toISOString().slice(0, 10);
+
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+
+async function load() {
+  const data = await api('/api/stats/reports?date=' + dateInput.value);
+  const s = data.summary;
+  const cards = [
+    { label: 'Jami hujjat', value: s.total, icon: 'description' },
+    { label: 'Tayyor', value: s.done, icon: 'task_alt' },
+    { label: 'Xatolik', value: s.errors, icon: 'warning' },
+    { label: 'Faol xodimlar', value: s.activeUsers, icon: 'group' },
+  ];
+  document.getElementById('summary').innerHTML = cards.map((c) => `
+    <div class="bg-surface-container-lowest border border-outline-variant p-stack-lg flex flex-col justify-between h-28">
+      <div class="flex justify-between items-start">
+        <span class="font-label-caps text-label-caps text-on-surface-variant">${c.label}</span>
+        <span class="material-symbols-outlined text-secondary">${c.icon}</span>
+      </div>
+      <p class="font-headline-lg text-headline-lg">${c.value}</p>
+    </div>`).join('');
+
+  document.getElementById('perUser').innerHTML = data.perUser.length ? data.perUser.map((u) => `
+    <tr class="hover:bg-surface-container transition-colors">
+      <td class="px-stack-lg py-4 font-body-md font-bold">${escapeHtml(u.translator)}</td>
+      <td class="px-stack-lg py-4 text-center">${u.total}</td>
+      <td class="px-stack-lg py-4 text-center text-on-secondary-fixed-variant font-bold">${u.done}</td>
+      <td class="px-stack-lg py-4 text-center">${u.in_progress}</td>
+      <td class="px-stack-lg py-4 text-center ${u.errors ? 'text-error font-bold' : ''}">${u.errors}</td>
+    </tr>`).join('') : '<tr><td colspan="5" class="px-stack-lg py-8 text-center text-on-surface-variant">Bu kuni faollik yo\'q</td></tr>';
+
+  document.getElementById('items').innerHTML = data.items.length ? data.items.map((d) => {
+    const b = STATUS_BADGE[d.status] || STATUS_BADGE.pending;
+    return `<tr class="hover:bg-surface-container transition-colors">
+      <td class="px-stack-lg py-3 font-code-sm text-on-surface-variant">${formatDate(d.created_at)}</td>
+      <td class="px-stack-lg py-3 font-body-md font-bold">${escapeHtml(d.original_name)}</td>
+      <td class="px-stack-lg py-3">${escapeHtml(d.doc_type_label)}</td>
+      <td class="px-stack-lg py-3">${escapeHtml(d.translator)}</td>
+      <td class="px-stack-lg py-3"><span class="px-2 py-0.5 text-[10px] font-bold rounded ${b.cls}">${b.label}</span></td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="5" class="px-stack-lg py-8 text-center text-on-surface-variant">Hujjat yo\'q</td></tr>';
+}
+
+dateInput.addEventListener('change', load);
+await load();
+</script>
+</body>
+</html>

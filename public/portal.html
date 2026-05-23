@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="light" lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Tarjima portali — Dream International</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+<script src="/js/tailwind-config.js"></script>
+<style>.material-symbols-outlined{vertical-align:middle}</style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<aside id="sidebar" class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-low border-r border-outline-variant flex flex-col py-gutter px-4 z-50"></aside>
+<main class="ml-[280px] min-h-screen flex flex-col">
+  <header id="header" class="h-16 flex justify-between items-center px-margin-desktop bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-40"></header>
+  <section class="p-margin-desktop flex-1 flex flex-col gap-stack-lg">
+    <nav class="flex text-on-surface-variant font-label-caps text-label-caps gap-2 opacity-60">
+      <span>Portal</span><span>/</span><span class="text-secondary font-bold">Yangi tarjima</span>
+    </nav>
+    <div class="grid grid-cols-12 gap-stack-lg flex-1">
+      <!-- Chap: hujjat turi -->
+      <div class="col-span-12 lg:col-span-4 flex flex-col gap-stack-lg">
+        <div class="bg-surface-container-lowest p-stack-lg border border-outline-variant rounded shadow-sm">
+          <h3 class="font-headline-sm text-headline-sm mb-stack-md">Til yo'nalishi</h3>
+          <div class="flex items-center justify-between gap-stack-md">
+            <div class="flex-1 text-center p-3 border border-outline-variant rounded">
+              <div class="font-label-caps text-[10px] text-secondary">MANBA</div>
+              <div class="font-headline-sm text-headline-sm">O'zbek</div>
+            </div>
+            <span class="material-symbols-outlined text-secondary">arrow_forward</span>
+            <div class="flex-1 text-center p-3 border border-outline-variant rounded">
+              <div class="font-label-caps text-[10px] text-secondary">NATIJA</div>
+              <div class="font-headline-sm text-headline-sm">Ingliz</div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-surface-container-lowest p-stack-lg border border-outline-variant rounded shadow-sm flex-1">
+          <h3 class="font-headline-sm text-headline-sm mb-stack-md">Hujjat turi</h3>
+          <div id="docTypes" class="flex flex-col gap-stack-sm"></div>
+        </div>
+      </div>
+      <!-- O'ng: forma -->
+      <div class="col-span-12 lg:col-span-8 flex flex-col gap-stack-lg">
+        <div class="bg-surface-container-lowest p-stack-lg border border-outline-variant rounded shadow-sm flex-1">
+          <div id="formHeader" class="flex items-center justify-between mb-stack-md">
+            <h3 class="font-headline-sm text-headline-sm">Ma'lumotlarni kiriting</h3>
+          </div>
+          <p id="hint" class="text-on-surface-variant mb-stack-md">Chap tomondan hujjat turini tanlang. So'ng asl PDF'ni yuklasangiz forma avtomatik to'ladi, yoki maydonlarni qo'lda to'ldiring.</p>
+          <!-- Asl PDF yuklab avtomatik to'ldirish -->
+          <div id="uploadZone" class="hidden mb-stack-md p-stack-md border-2 border-dashed border-outline-variant rounded-lg flex items-center justify-between gap-stack-md cursor-pointer hover:border-secondary transition-all">
+            <input type="file" id="pdfInput" class="hidden" accept=".pdf" />
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-secondary text-3xl">cloud_upload</span>
+              <div>
+                <div class="font-body-md font-bold">Asl PDF'ni yuklang — forma o'zi to'ladi</div>
+                <div id="pdfStatus" class="font-code-sm text-code-sm text-on-surface-variant">Matnli PDF tanlang (skaner uchun qo'lda to'ldiring)</div>
+              </div>
+            </div>
+            <span class="px-4 py-2 bg-surface-container-high text-on-surface font-label-caps text-label-caps rounded">PDF TANLASH</span>
+          </div>
+          <form id="docForm" class="grid grid-cols-1 md:grid-cols-2 gap-stack-md"></form>
+          <!-- Dinamik jadval (jadvalli hujjatlar uchun) -->
+          <div id="tableSection" class="hidden mt-stack-lg">
+            <div class="flex items-center justify-between mb-stack-sm">
+              <h4 id="tableTitle" class="font-headline-sm text-headline-sm">Jadval</h4>
+              <button type="button" id="addRowBtn" class="px-3 py-1.5 border border-secondary text-secondary font-label-caps text-label-caps rounded hover:bg-secondary-container transition-colors">
+                <span class="material-symbols-outlined text-sm">add</span> QATOR QO'SHISH
+              </button>
+            </div>
+            <div class="overflow-x-auto border border-outline-variant rounded">
+              <table class="w-full text-left border-collapse text-body-md">
+                <thead><tr id="tableHead" class="bg-surface-container-low border-b border-outline-variant"></tr></thead>
+                <tbody id="tableBody" class="divide-y divide-outline-variant"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="actions" class="hidden mt-stack-lg flex items-center gap-stack-md border-t border-outline-variant pt-stack-md">
+            <button id="generateBtn" class="flex items-center gap-2 px-8 py-3 bg-secondary text-on-secondary font-label-caps text-label-caps rounded-lg hover:brightness-110 active:scale-95 transition-all disabled:opacity-40">
+              <span class="material-symbols-outlined">auto_awesome</span> DOCX YARATISH
+            </button>
+            <button id="translitBtn" type="button" class="px-4 py-3 border border-outline-variant text-on-surface-variant font-label-caps text-label-caps rounded-lg hover:bg-surface-container-high" title="Ism/joylarni inglizchaga o'girish">
+              <span class="material-symbols-outlined">translate</span> AVTO-TRANSLIT
+            </button>
+          </div>
+          <div id="resultBox" class="hidden mt-stack-md p-stack-md border border-secondary rounded bg-secondary-container/10 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary">task_alt</span>
+              <span class="font-body-md">Tayyor! Arxivga ham saqlandi.</span>
+            </div>
+            <a id="downloadLink" class="px-6 py-2 bg-primary text-on-primary font-label-caps text-label-caps rounded hover:opacity-90">YUKLAB OLISH</a>
+          </div>
+          <p id="errorBox" class="hidden mt-stack-md text-error font-body-md"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+<script type="module">
+import { api, renderLayout, escapeHtml } from '/js/common.js';
+await renderLayout('/portal.html', 'Tarjima portali');
+
+let currentType = null;
+let currentFields = [];
+let currentTable = null;
+
+const { templates } = await api('/api/templates');
+const list = document.getElementById('docTypes');
+if (!templates.length) {
+  list.innerHTML = '<p class="text-on-surface-variant">Hozircha shablon tayyorlanmagan.</p>';
+}
+list.innerHTML = templates.map((t) => `
+  <button data-key="${t.key}" ${t.ready ? '' : 'disabled'} class="doc-type flex items-center justify-between gap-2 p-stack-md border rounded-lg text-left transition-all ${t.ready ? 'border-outline-variant hover:border-secondary' : 'border-outline-variant opacity-40 cursor-not-allowed'}">
+    <span class="font-body-md font-bold">${escapeHtml(t.label)}</span>
+    <span class="font-code-sm text-code-sm text-on-surface-variant">${t.ready ? t.fieldCount + ' maydon' : 'tez orada'}</span>
+  </button>`).join('');
+
+const form = document.getElementById('docForm');
+const actions = document.getElementById('actions');
+const hint = document.getElementById('hint');
+const resultBox = document.getElementById('resultBox');
+const errorBox = document.getElementById('errorBox');
+
+list.querySelectorAll('.doc-type').forEach((b) => b.addEventListener('click', () => selectType(b.dataset.key, b)));
+
+async function selectType(key, btn) {
+  currentType = key;
+  resultBox.classList.add('hidden');
+  errorBox.classList.add('hidden');
+  list.querySelectorAll('.doc-type').forEach((x) => {
+    const on = x === btn;
+    x.classList.toggle('border-secondary', on);
+    x.classList.toggle('bg-secondary-container/10', on);
+  });
+  const data = await api(`/api/templates/${key}/fields`);
+  currentFields = data.fields;
+  hint.classList.add('hidden');
+  document.getElementById('uploadZone').classList.remove('hidden');
+  document.getElementById('pdfStatus').textContent = 'Matnli PDF tanlang (skaner uchun qo\'lda to\'ldiring)';
+  form.innerHTML = data.fields.map((f) => `
+    <div>
+      <label class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">${escapeHtml(f.label)}${f.translit ? ' 🔤' : ''}</label>
+      <input name="${f.name}" data-translit="${f.translit}" placeholder="${escapeHtml(f.placeholder)}" class="w-full p-2.5 bg-surface border border-outline-variant rounded focus:border-secondary focus:ring-0 outline-none" />
+    </div>`).join('');
+  actions.classList.remove('hidden');
+
+  // Jadval sozlash
+  currentTable = data.table;
+  const tableSection = document.getElementById('tableSection');
+  if (currentTable) {
+    document.getElementById('tableHead').innerHTML =
+      currentTable.labels.map((l) => `<th class="px-2 py-2 font-label-caps text-[10px] text-on-surface-variant uppercase">${escapeHtml(l)}</th>`).join('') + '<th class="w-8"></th>';
+    document.getElementById('tableBody').innerHTML = '';
+    addRow();
+    tableSection.classList.remove('hidden');
+  } else {
+    tableSection.classList.add('hidden');
+    document.getElementById('tableBody').innerHTML = '';
+  }
+}
+
+function addRow(values = {}) {
+  if (!currentTable) return;
+  const tr = document.createElement('tr');
+  tr.className = 'row';
+  tr.innerHTML =
+    currentTable.columns.map((c) => `<td class="px-1 py-1"><input data-col="${c}" value="${escapeHtml(values[c] || '')}" class="w-full p-1.5 bg-surface border border-outline-variant rounded text-body-md focus:border-secondary outline-none" /></td>`).join('') +
+    `<td class="px-1 text-center"><button type="button" class="del text-error hover:opacity-70"><span class="material-symbols-outlined text-sm">close</span></button></td>`;
+  tr.querySelector('.del').addEventListener('click', () => tr.remove());
+  document.getElementById('tableBody').appendChild(tr);
+}
+document.getElementById('addRowBtn').addEventListener('click', () => addRow());
+
+function collectRows() {
+  const rows = [];
+  document.querySelectorAll('#tableBody .row').forEach((tr) => {
+    const row = {};
+    tr.querySelectorAll('input[data-col]').forEach((inp) => (row[inp.dataset.col] = inp.value));
+    if (Object.values(row).some((x) => x && x.trim())) rows.push(row);
+  });
+  return rows;
+}
+
+// Asl PDF yuklash -> formani avtomatik to'ldirish
+const uploadZone = document.getElementById('uploadZone');
+const pdfInput = document.getElementById('pdfInput');
+const pdfStatus = document.getElementById('pdfStatus');
+uploadZone.addEventListener('click', () => pdfInput.click());
+// Sichqoncha bilan tortib tashlash (drag & drop)
+['dragenter', 'dragover'].forEach((ev) => uploadZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); uploadZone.classList.add('border-secondary', 'bg-secondary-container/10'); }));
+['dragleave', 'drop'].forEach((ev) => uploadZone.addEventListener(ev, (e) => { e.preventDefault(); e.stopPropagation(); uploadZone.classList.remove('border-secondary', 'bg-secondary-container/10'); }));
+uploadZone.addEventListener('drop', (e) => {
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if (f) { pdfInput.files = e.dataTransfer.files; pdfInput.dispatchEvent(new Event('change')); }
+});
+// Brauzer faylni ochib yubormasligi uchun (zonadan tashqari tashlansa)
+['dragover', 'drop'].forEach((ev) => window.addEventListener(ev, (e) => e.preventDefault()));
+
+pdfInput.addEventListener('change', async () => {
+  const file = pdfInput.files[0];
+  if (!file || !currentType) return;
+  pdfStatus.textContent = 'O\'qilmoqda...';
+  try {
+    const fd = new FormData();
+    fd.append('file', file);
+    const res = await api(`/api/templates/${currentType}/extract`, { method: 'POST', body: fd });
+    if (res.scanned || res.message) {
+      pdfStatus.textContent = res.message || 'Skaner hujjat — qo\'lda to\'ldiring';
+    }
+    const vals = res.values || {};
+    let count = 0;
+    Object.entries(vals).forEach(([k, val]) => {
+      if (k === (currentTable && currentTable.loop)) return; // jadval alohida
+      const input = form.querySelector(`[name="${k}"]`);
+      if (input) { input.value = val; count++; }
+    });
+    // Jadval qatorlarini to'ldirish
+    if (currentTable && Array.isArray(vals[currentTable.loop])) {
+      document.getElementById('tableBody').innerHTML = '';
+      vals[currentTable.loop].forEach((row) => addRow(row));
+      if (!vals[currentTable.loop].length) addRow();
+      count += vals[currentTable.loop].length;
+    }
+    if (count) pdfStatus.textContent = `${count} ta maydon/qator to'ldirildi — tekshiring va tuzating`;
+  } catch (err) {
+    pdfStatus.textContent = 'Xato: ' + err.message;
+  }
+});
+
+// Avto-transliteratsiya: 🔤 belgili maydonlarni inglizchaga o'giradi
+document.getElementById('translitBtn').addEventListener('click', async () => {
+  for (const f of currentFields) {
+    if (!f.translit) continue;
+    const input = form.querySelector(`[name="${f.name}"]`);
+    if (input && input.value.trim()) {
+      const { result } = await api('/api/templates/transliterate', { method: 'POST', body: JSON.stringify({ text: input.value }) });
+      input.value = result;
+    }
+  }
+});
+
+document.getElementById('generateBtn').addEventListener('click', async () => {
+  if (!currentType) return;
+  errorBox.classList.add('hidden');
+  resultBox.classList.add('hidden');
+  const values = {};
+  new FormData(form).forEach((v, k) => (values[k] = v));
+  if (currentTable) values[currentTable.loop] = collectRows();
+  try {
+    const res = await api(`/api/templates/${currentType}/generate`, { method: 'POST', body: JSON.stringify({ values }) });
+    document.getElementById('downloadLink').href = res.downloadUrl;
+    resultBox.classList.remove('hidden');
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.classList.remove('hidden');
+  }
+});
+</script>
+</body>
+</html>

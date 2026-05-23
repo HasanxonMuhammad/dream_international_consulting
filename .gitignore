@@ -1,0 +1,17 @@
+node_modules/
+.env
+data/
+storage/
+*.log
+.DS_Store
+
+# Ishchi/vaqtinchalik fayllar
+_analysis/
+
+# Maxfiylik: haqiqiy shaxsiy hujjatlar va test natijalari (public repoga chiqmaydi)
+tarjim_asl_hujjat/
+tekshirish_namunalari/
+
+# Tesseract OCR (keraksiz)
+*.traineddata
+_commitmsg.txt

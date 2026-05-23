@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html class="light" lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Sozlamalar — Dream International</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+<script src="/js/tailwind-config.js"></script>
+<style>.material-symbols-outlined{vertical-align:middle}</style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen">
+<aside id="sidebar" class="fixed left-0 top-0 h-screen w-[280px] bg-surface-container-low border-r border-outline-variant flex flex-col py-gutter px-4 z-50"></aside>
+<main class="ml-[280px] min-h-screen flex flex-col">
+  <header id="header" class="h-16 flex justify-between items-center px-margin-desktop bg-surface-container-lowest border-b border-outline-variant sticky top-0 z-40"></header>
+  <section class="p-margin-desktop flex-1 max-w-xl">
+    <h2 class="font-headline-lg text-headline-lg mb-stack-lg">Sozlamalar</h2>
+    <div class="bg-surface-container-lowest border border-outline-variant rounded p-stack-lg">
+      <h3 class="font-headline-sm text-headline-sm mb-stack-md">Parolni o'zgartirish</h3>
+      <form id="pwForm" class="flex flex-col gap-stack-md">
+        <input name="currentPassword" type="password" required placeholder="Joriy parol" class="w-full p-3 bg-surface border border-outline-variant rounded focus:border-secondary outline-none" />
+        <input name="newPassword" type="password" required placeholder="Yangi parol (kamida 6 belgi)" class="w-full p-3 bg-surface border border-outline-variant rounded focus:border-secondary outline-none" />
+        <p id="msg" class="hidden font-body-md"></p>
+        <button class="px-6 py-3 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg hover:opacity-90 self-start">SAQLASH</button>
+      </form>
+    </div>
+  </section>
+</main>
+<script type="module">
+import { api, renderLayout } from '/js/common.js';
+await renderLayout('/settings.html', 'Sozlamalar');
+const form = document.getElementById('pwForm');
+const msg = document.getElementById('msg');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  msg.classList.add('hidden');
+  try {
+    await api('/api/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify({ currentPassword: form.currentPassword.value, newPassword: form.newPassword.value }),
+    });
+    msg.textContent = 'Parol o\'zgartirildi';
+    msg.className = 'text-secondary font-body-md';
+    form.reset();
+  } catch (err) {
+    msg.textContent = err.message;
+    msg.className = 'text-error font-body-md';
+  }
+  msg.classList.remove('hidden');
+});
+</script>
+</body>
+</html>

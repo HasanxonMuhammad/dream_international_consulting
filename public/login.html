@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html class="light" lang="uz">
+<head>
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1.0" name="viewport" />
+<title>Kirish — Dream International Consulting</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=IBM+Plex+Sans:wght@400;600;700&family=Material+Symbols+Outlined&display=swap" rel="stylesheet" />
+<script src="/js/tailwind-config.js"></script>
+<style>.material-symbols-outlined{vertical-align:middle}</style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex items-center justify-center font-body-md">
+<div class="w-full max-w-md p-margin-desktop">
+  <div class="text-center mb-stack-lg">
+    <div class="inline-flex w-14 h-14 bg-primary rounded-lg items-center justify-center mb-stack-md">
+      <span class="material-symbols-outlined text-on-primary text-3xl">translate</span>
+    </div>
+    <h1 class="font-headline-md text-headline-md font-bold">Dream International</h1>
+    <p class="font-label-caps text-label-caps text-on-surface-variant opacity-70">Tarjima boshqaruv tizimi</p>
+  </div>
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-sm p-stack-lg">
+    <h2 class="font-headline-sm text-headline-sm mb-stack-lg">Tizimga kirish</h2>
+    <form id="loginForm" class="flex flex-col gap-stack-md">
+      <div>
+        <label class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">Login</label>
+        <input name="username" required autocomplete="username" class="w-full p-3 bg-surface border border-outline-variant rounded focus:border-secondary focus:ring-0 outline-none" placeholder="login" />
+      </div>
+      <div>
+        <label class="font-label-caps text-label-caps text-on-surface-variant mb-1 block">Parol</label>
+        <input name="password" type="password" required autocomplete="current-password" class="w-full p-3 bg-surface border border-outline-variant rounded focus:border-secondary focus:ring-0 outline-none" placeholder="••••••••" />
+      </div>
+      <p id="error" class="text-error text-body-md hidden"></p>
+      <button type="submit" class="mt-2 px-6 py-3 bg-primary text-on-primary font-label-caps text-label-caps rounded-lg hover:opacity-90 transition-opacity active:scale-95">
+        KIRISH
+      </button>
+    </form>
+  </div>
+  <p class="text-center text-on-surface-variant text-code-sm mt-stack-md opacity-60">© Dream International Consulting</p>
+</div>
+<script>
+  const form = document.getElementById('loginForm');
+  const errEl = document.getElementById('error');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errEl.classList.add('hidden');
+    const body = JSON.stringify({
+      username: form.username.value.trim(),
+      password: form.password.value,
+    });
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Xatolik');
+      location.href = '/dashboard.html';
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.remove('hidden');
+    }
+  });
+</script>
+</body>
+</html>
